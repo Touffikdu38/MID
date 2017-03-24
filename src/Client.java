@@ -21,7 +21,29 @@ public class Client {
 		this.etat=false;
 	}
 	
-	kskdsk
+	public String getIdclient() {
+		return id;
+	}
+
+	public Point getCoordonnées() {
+		return coordonnées;
+	}
+	
+	public int[] getFenetreLivraison() {
+		return fenetreLivraison;
+	}
+	
+	public double getPenalite() {
+		return penalite;
+	}
+	
+	public double[] getMarchandiseJourLivree() {
+		return marchandiseJourLivree;
+	}
+
+	public boolean getEtat() {
+		return etat;
+	}
 
 
 	
