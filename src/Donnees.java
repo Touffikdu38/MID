@@ -18,12 +18,12 @@ public class Donnees{
 	private String[] idusines;
 	private String[] idClients;
 	private String[] idcamions;
-	private int[][] fenetresClients;
+	//private int[][] fenetresClients;
 	
 	
 	
 	public Donnees (String name){
-       	String nomfichier = name + ".txt";
+       	this.nomfichier = name + ".txt";
     	InputFile f = new InputFile();
 		
     	f.open(nomfichier);	
@@ -42,14 +42,14 @@ public class Donnees{
     	
     	this.usines= new double [nbusines][4][nbjours];
     	this.coordUsines= new double [nbusines][2];
-    	this.clients= new double[nbclients][4];
+    	this.clients= new double[nbclients][6];
     	this.camions= new double [nbcamions][10];
     	this.prestataire= new double[2][nbjours];  		
     	this.usinesCamions= new String[nbcamions];
     	this.idusines= new String[nbusines];
     	this.idClients= new String[nbclients];
     	this.idcamions= new String[nbcamions];
-    	this.fenetresClients= new int[nbclients][2];
+    	//this.fenetresClients= new int[nbclients][2];
 
     	for(int i=0; i<nbusines; i++ ){
     	String idUsine= f.readString();
@@ -66,12 +66,12 @@ public class Donnees{
     	
     	for(int i=0; i<nbclients; i++){
     		String idClient= f.readString();
-    		int fenetre1= f.readInt();
-    		int fenetre2= f.readInt();
-    		this.fenetresClients[i][0]= fenetre1;
-    		this.fenetresClients[i][1]= fenetre2;
-    		this.idClients[i]=idClient;
-    		for (int j=0; j<4;j++){
+    		//int fenetre1= f.readInt();
+    		//int fenetre2= f.readInt();
+    		//this.fenetresClients[i][0]= fenetre1;
+    		//this.fenetresClients[i][1]= fenetre2;
+    		//this.idClients[i]=idClient;
+    		for (int j=0; j<6;j++){
     			this.clients[i][j]=f.readDouble();
     		}
     	}
@@ -80,7 +80,7 @@ public class Donnees{
     		String idCamion=f.readString();
     		this.idcamions[i]=idCamion;
     		String idCamionUsine=f.readString();
-    		this.usinesCamions[i]=f.readString();
+    		this.usinesCamions[i]=idCamionUsine;
     		for(int j=0; j<10; j++){
     			this.camions[i][j]= f.readDouble();
     			}
@@ -127,7 +127,7 @@ public class Donnees{
 		Client[] tabClients= new Client[nbclients];
 		for( int i=0; i<nbclients; i++){
 			Point coord= new Point(clients[i][0], clients[i][1]);
-			Client c = new Client( idClients[i], coord, clients[i][2],clients[i][3], this.fenetresClients[i][0], this.fenetresClients[i][1], this.nbjours );
+			Client c = new Client( idClients[i], coord, clients[i][2],clients[i][3], this.clients[i][4], this.clients[i][5], this.nbjours );
 			tabClients[i]= c;
 		}
 		return tabClients;
@@ -167,17 +167,6 @@ public class Donnees{
 		return this.nbjours;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-        		
-        	
 
 
 }
