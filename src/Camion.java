@@ -104,7 +104,7 @@ public class Camion {
 		return false;
 		
 	}
-	// on veut savoir si une fois s'etre déplacé au point p on aura le temps de revenir
+	// on veut savoir si une fois s'etre dÃ©placÃ© au point p on aura le temps de revenir
 	public void retourUsine() {
 		this.coord = this.usine.getCoord();
 		this.cout = this.cout + getCoutTraject(this.coord, this.usine.getCoord());
@@ -116,7 +116,9 @@ public class Camion {
 	public Usine usineBase(){
 		return this.usine;
 	}
-	
+	public double getCoutKm(){
+		return coutTransportkm;
+	}
 	
 	
 
