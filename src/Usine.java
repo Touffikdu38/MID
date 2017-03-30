@@ -22,23 +22,18 @@ public class Usine {
 		this.id=id;
 		this.dureeExp=duree;
 		this.coord=coord;
-		this.capaciteProd=new double[dureeExp];
-		this.capaciteStock=new double[dureeExp];
-		this.coutStock=new double[dureeExp];
-		this.coutProd=new double[dureeExp];
+		this.capaciteProd=capaProd;
+		this.capaciteStock=capaStock;
+		this.coutStock=coutStock;
+		this.coutProd=coutProd;
 		this.stock= new double[dureeExp];
 		this.production=new double[dureeExp];
-		for (int i=0; i<7; i++){
-			this.capaciteProd[i]=capaProd[i];
-			this.capaciteStock[i]=capaStock[i];
-			this.coutStock[i]= coutStock[i];
-			this.coutProd[i]= coutProd[i];
+		for (int i=0;i<dureeExp;i++){
 			this.production[i]=0;
 			this.stock[i]=0;
 		}
-		
-		this.flotteCamion=null ;
-		this.clients=null;
+		this.flotteCamion=new LinkedList<Camion>();
+		this.clients=new LinkedList<Client>();
 		this.quantiteALivrer= new double[dureeExp];
 		for( int i=0; i<dureeExp-1; i++){
 			this.quantiteALivrer[i]= this.production[i]+this.stock[i]-this.stock[i+1];
@@ -46,6 +41,9 @@ public class Usine {
 		this.quantiteALivrer[dureeExp-1]= this.production[dureeExp-1]+this.stock[dureeExp-1];
 	}
 		
+	public int getJour(){
+		return this.dureeExp;
+	}
 
 	public LinkedList<Client> getClients(){
 		return this.clients;
@@ -65,14 +63,12 @@ public class Usine {
 		return this.coord;
 	}
 	
-	public void setProd(int prod, int jour){
-		if( this.capaciteProd[jour]>= prod)
+	public void setProd(double prod, int jour){
 		this.production[jour]= prod;
 		
 	}
 	
-	public void setStock(int stock, int jour){
-		if( this.capaciteStock[jour]>= stock)
+	public void setStock(double stock, int jour){
 		this.production[jour]= stock;
 		
 	}
@@ -143,6 +139,7 @@ public class Usine {
 		}
 		return qte;
 	}
+	
 	
 	
 }
