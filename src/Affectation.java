@@ -5,12 +5,14 @@ public class Affectation {
 	
 	private Usine[] usines;
 	private Client[] clients;
+	private Camion[] camions;
 
 	
 	
-	public Affectation( Usine[] u,Client[] c ){
+	public Affectation( Usine[] u,Client[] c , Camion[]ca){
 		this.usines=u;
 		this.clients=c;
+		this.camions=ca; 
 	}
 	
 	public double[] getDemande(){
@@ -42,6 +44,21 @@ public class Affectation {
 	
 	
 	
+	public void associeCamions(){
+		int nbCamions=this.camions.length;
+		int nbUsines = this.usines.length;		
+		for (int i=0;i<nbUsines;i++){
+			for(int j=0;j<nbCamions;j++){
+				if (camions[j].usineBase()==usines[i]){
+					this.usines[i].addCamion(camions[j]);
+				}
+			}
+			
+			
+		}
+	}
+	
+	
 		public void plClient(){
 		
 	
@@ -52,41 +69,63 @@ public class Affectation {
                 
                 // traduction des correspondances entre les noms dans le modele et les donnees
                 OplData data2 = new OplData(solver2.getOplEnv());
+               
+                data2.add("nbClients", this.clients.length);
+                data2.add("nbUsines", this.usines.length);
                 data2.add("demande",getDemande());
-                data2.add("nbclients", this.clients.length);
-                data2.add("nbusines", this.usines.length);
-                data2.add("distance", getDistance());
                 data2.add("capaP", getCapacite());
+                data2.add("distance", getDistance());
+                
+              
               
                 // resolution du probleme
                 int status = solver2.solve(data2);
+              
                 
                 // recuperation de la solution optimale
                 if (status == 0) {
                 	
-                        int [][] solAffectation = solver2.getIntArray("y", "usines", "clients");
+                        int [][] solAffectation = solver2.getIntArray("y", "clients", "usines");
+                        solver2.printData();
                         
-                        for (int i=0; i< this.usines.length; i++){
+                     
                         	for( int j=0; j<this.clients.length; j++){
-                        		if (solAffectation[i][j]==1){
-                            		this.usines[i].addClient(clients[j]);
+                        		for (int i=0; i< this.usines.length; i++){
+                        		if (solAffectation[j][i]==1){
+                            		this.usines[i].addClient(this.clients[j]);
+                            		this.clients[j].setUsine(this.usines[i]);
                         	}
                         	
                         }
+                }
+                        	
                 }
              
                 data2.end();
                 solver2.end();  
         
 		
-	}
+                
+                
+                
+		}
+                
+                
+        public Usine[] getUsines(){
+        	return this.usines;
+        }
+        
+        public Client[] getClients(){
+        	return this.clients;
+        }
 	
 	
 	
 	
 	
 	
-}
+	
+
 		
 		
 }
