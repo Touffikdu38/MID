@@ -6,28 +6,72 @@ public class Client {
 	private int dureeExp;
 	private Point coord;
 	private double demande;
-	private int[] fenetreLivraison; 
+	private double[] fenetreLivraison; 
 	private double penalite;
 	private double[]marchandiseJourLivree; 
 	private boolean etat;
 	private Usine usine;
 	
-	public Client( String id, Point coord, double demande, double penalite, int d1, int d2, int duree){
+	public Client( String id, Point coord, double demande, double d1, double d2,double penalite, int duree){
 		this.id=id;
 		this.dureeExp=duree;
 		this.coord=coord;
 		this.demande=demande;
-		this.fenetreLivraison=new int[2];
+		this.fenetreLivraison=new double[2];
 		this.fenetreLivraison[0]= d1;
 		this.fenetreLivraison[1]= d2;
 		this.marchandiseJourLivree= new double[dureeExp];
 		this.etat=false;
-		this.usine=null;
 	}
 	
-	public int jourALivrer(){
+	public double jourALivrer(){
 		return this.fenetreLivraison[0];
 	}
+	
+	
+	public double getMarchandise( int jour){
+		return this.marchandiseJourLivree[jour];
+	}
+	
+	public void setUsine(Usine u){
+		this.usine=u;
+		
+	}
+	
+	
+	public Usine getUsine(){
+		return this.usine;
+	}
+	
+	
+	
+	
+	public double getPenalites(int j){
+		if( j>= getD1()-1 && j<= getD2()){
+			return 0;
+		}
+		 else {
+			return this.penalite;
+		}
+	}
+	
+	
+	public double coutPenalite(){
+		double somme=0;
+		for( int i=0; i<this.dureeExp; i++){
+			somme= somme + getPenalites(i)*this.marchandiseJourLivree[i];
+			
+		}
+		return somme;
+	}
+	
+	
+	
+	public void setMarchandiseTot( double[] tab){
+		this.marchandiseJourLivree=tab;
+	}
+
+	
 	
 	
 	
@@ -37,17 +81,22 @@ public class Client {
 			demandeRest= demandeRest-this.marchandiseJourLivree[j];
 		}
 		return demandeRest;
+	}	
 		
-		
-		
-	}
-	public void setMarchandise(int j, double q){
-		this.marchandiseJourLivree[j]+=q;
+	public double getD1(){
+		return this.fenetreLivraison[0];
 	}
 	
-	public String getIdclient() {
-		return this.id;
+	public double getD2(){
+		return this.fenetreLivraison[1];
 	}
+		
+	
+	public void setMarchandise(int j, double q){
+		this.marchandiseJourLivree[j]-=q;
+	}
+	
+	
 
 	
 	
@@ -56,9 +105,7 @@ public class Client {
 	}
 	
 	
-	public double getPenalite() {
-		return this.penalite;
-	}
+
 	
 	
 
@@ -85,27 +132,10 @@ public class Client {
 	}
 
 
-	public double coutPenalite() {
-		double qteTotale=0;
-		double qtePasFenetre=0;
-		for( int i =0; i<this.marchandiseJourLivree.length; i++){
-			if (estPenalite(i)){
-				qtePasFenetre = qtePasFenetre + this.marchandiseJourLivree[i];
-			}
-			qteTotale= qteTotale + this.marchandiseJourLivree[i];
-		}
-		return ( this.penalite*qtePasFenetre/qteTotale);
-	}
 	
 
 public Point getCoord(){
 	return this.coord;
 }
-public double getMarchandisesPrest(double quantite,int j){
-	if (quantite<=this.getDemandeRestante(j)){
-		return quantite;
-	}else{
-		return this.getDemandeRestante(j);
-	}
-}
+
 }
