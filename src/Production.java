@@ -1,368 +1,229 @@
 import java.util.Iterator;
 
-
-
 import oplinterface.*;
 
 public class Production {
-	
-	private Affectation affect;
+
+	private Usine[] affect;
 	private int nbJours;
 	private double cout;
-	
-	
-	public Production(Affectation affect, int nbJours) {
-		this.affect= affect;
-		this.nbJours=nbJours;
-		this.cout=0;
-	}
+	private double[] test;
 
-	public double[][] getCapa(){
-		double[][] capa= new double[this.affect.getUsines().length][this.nbJours];
-		for( int i=0; i<this.affect.getUsines().length; i++){
-			for( int j=0; j<this.nbJours; j++){
-				capa[i][j]= this.affect.getUsines()[i].getCapaciteProd(j);
+	/**
+	 * Constructeur d'une production
+	 * @param u tableau d'usines
+	 * @param nbJours nombre de jours total d'activité
+	 */
+	
+	public Production(Usine[] u, int nbJours) {
+		this.affect = u;
+		this.nbJours = nbJours;
+		this.cout = 0;
+	}
+	
+	/**
+	 * @return la capacité journalière de chaque usine
+	 */
+
+	public double[][] getCapa() {
+		double[][] capa = new double[this.affect.length][this.nbJours];
+		for (int i = 0; i < this.affect.length; i++) {
+			for (int j = 0; j < this.nbJours; j++) {
+				capa[i][j] = this.affect[i].getCapaciteProd(j);
 			}
 		}
 		return capa;
 	}
 	
-	
-	public double[][] getCapaStock(){
-		double[][] capa= new double[this.affect.getUsines().length][this.nbJours];
-		for( int i=0; i<this.affect.getUsines().length; i++){
-			for( int j=0; j<this.nbJours; j++){
-				capa[i][j]= this.affect.getUsines()[i].getCapaciteStock(j);
+	/**
+	 * @return le stock journalier de chaque usine
+	 */
+
+	public double[][] getCapaStock() {
+		double[][] capa = new double[this.affect.length][this.nbJours];
+		for (int i = 0; i < this.affect.length; i++) {
+			for (int j = 0; j < this.nbJours; j++) {
+				capa[i][j] = this.affect[i].getCapaciteStock(j);
 			}
 		}
 		return capa;
 	}
 	
-	public double[][] getCoutProd(){
-		double[][] prod= new double[this.affect.getUsines().length][this.nbJours];
-		for( int i=0; i<this.affect.getUsines().length; i++){
-			for( int j=0; j<this.nbJours; j++){
-				prod[i][j]= this.affect.getUsines()[i].getcoutProd(j);
+	/**
+	 * @return le coût de production journalier de chaque usine
+	 */
+
+	public double[][] getCoutProd() {
+		double[][] prod = new double[this.affect.length][this.nbJours];
+		for (int i = 0; i < this.affect.length; i++) {
+			for (int j = 0; j < this.nbJours; j++) {
+				prod[i][j] = this.affect[i].getcoutProd(j);
 			}
 		}
 		return prod;
 	}
+
+	/**
+	 * @return le coût de stockage journalier de chaque usine
+	 */
 	
-	public double[][] getCoutStock(){
-		double[][] stock= new double[this.affect.getUsines().length][this.nbJours];
-		for( int i=0; i<this.affect.getUsines().length; i++){
-			for( int j=0; j<this.nbJours; j++){
-				stock[i][j]= this.affect.getUsines()[i].getcoutStock(j);
+	public double[][] getCoutStock() {
+		double[][] stock = new double[this.affect.length][this.nbJours];
+		for (int i = 0; i < this.affect.length; i++) {
+			for (int j = 0; j < this.nbJours; j++) {
+				stock[i][j] = this.affect[i].getcoutStock(j);
 			}
 		}
 		return stock;
 	}
-	
-	
-	public double[][][] getDemandeClientJour(){
-		double[][][] demande= new double[this.affect.getUsines().length][this.affect.getClients().length][this.nbJours];
-		for ( int k=0; k<this.affect.getUsines().length; k++){
 
-			Iterator<Client>iter= this.affect.getUsines()[k].getClients().iterator();
-			int j=0;
-			while( iter.hasNext()){
-				
-				Client c= iter.next();
-				
-				for( int i=0; i<this.nbJours; i++){
 	
+	/**
+	 * @param u objet de type Usine
+	 * @return la demande journalière de chaque client affecté à une usine
+	 * Pour cela on a choisi de diviser sa demande sur toute sa fenêtre 
+	 */
+	
+	public double[][] getDemandeClientJour(Usine u) {
+		this.test = new double[this.nbJours];
+		double[][] demande = new double[u.getClients().size()][this.nbJours];
 
-						double tailleFen=1;
-						if( c.getD2() != c.getD1()){
-							tailleFen= c.getD2()-c.getD1();
-						}	
-						double dem= c.getDemande()/tailleFen;	
-						if( j>= c.getD1()-1 && j<= c.getD2()-1){
-							demande[k][j][i]= dem;
-						} else{
-							demande[k][j][i]= 0;
-						}
-							
+		Iterator<Client> iter = u.getClients().iterator();
+		int j = 0;
+		while (iter.hasNext()) {
+			Client c = iter.next();
+			double tailleFen = 1;
+			if (c.getD2() != c.getD1()) {
+				tailleFen = c.getD2() - c.getD1() + 1;
 			}
-				j++;
-			
-			
-			}
-		}
-	}
-				
-				
-
-				 
-				
-				
-				
-					
-				
-			
-			double demandeJour= this.affect.getClients()[i].getDemande()/tailleFen;
-			for( int j=0; j< this.nbJours; j++ ){
-				if( j<= this.affect.getClients()[i].getD2()-1 && this.affect.getClients()[i].getD1()-1 <= j){
-					demande[i][j]=demandeJour;
+			double dem = c.getDemande() / tailleFen;
+			for (int i = 0; i < this.nbJours; i++) {
+				if (i >= c.getD1() - 1 && i <= c.getD2() - 1) {
+					demande[j][i] = dem;
+				} else {
+					demande[j][i] = 0;
 				}
-				else{
-					demande[i][j]=0;
-				}
-				
 			}
-		}
+			j++;
 		}
 		return demande;
-		
 	}
+
 	
+	/**
+	 * @param u objet de type Usine
+	 * @return
+	 */
 	
-	public double[][] getFenetre(){
-		double[][] fenetre= new double[this.affect.getClients().length][2];
-		for( int i=0; i<this.affect.getClients().length; i++){
-				fenetre[i][0]= this.affect.getClients()[i].getD1();
-				fenetre[i][1]=this.affect.getClients()[i].getD2();
-				
-			}
+	public double[][] getFenetre(Usine u) {
+
+		double[][] fenetre = new double[u.getClients().size()][2];
+
+		Iterator<Client> iter = u.getClients().iterator();
+		int j = 0;
+		while (iter.hasNext()) {
+			Client c = iter.next();
+			fenetre[j][0] = c.getD1();
+			fenetre[j][1] = c.getD2();
+			j++;
+
+		}
 		return fenetre;
 	}
-	
-	public double[][] getPenalite(){
-		double[][] penalite= new double[this.affect.getClients().length][this.nbJours];
-		for( int i=0; i<this.affect.getClients().length; i++){
-			for( int j=0; j< this.nbJours; j++ ){
-					penalite[i][j]=this.affect.getClients()[i].getPenalites(j);
-				
+
+	public double[][] getPenalite(Usine u) {
+		double[][] penalite = new double[u.getClients().size()][this.nbJours];
+
+		Iterator<Client> iter = u.getClients().iterator();
+		int j = 0;
+		while (iter.hasNext()) {
+			Client c = iter.next();
+			for (int k = 0; k < this.nbJours; k++) {
+				penalite[j][k] = c.getPenalites(k);
+
 			}
-			}
-		
+			j++;
+
+		}
 		return penalite;
-		
-	}
-	
-		
 
-   
+	}
+
 	/*
-	 * Pl 2 Recherche du coût minimum de production et stockage
+	 * Pl 2 Recherche du co�t minimum de production et stockage
 	 */
-		
-	public double[][] plProduction(){
-		double [][] tab=new double[this.affect.getUsines().length][nbJours];
-		for (int i=0;i<this.affect.getUsines().length;i++){
-			for(int j=0;j<nbJours;j++){
-				tab[i][j]=0;
-			}
-		}
-		
-               
-		for (int i=0; i< this.affect.getUsines().length; i++){
-			
-            	// lecture du modele prod
-                OplSolver solver1 = new OplSolver("Production2.mod");
-                
-                // traduction des correspondances entre les noms dans le modele et les donnees
-                OplData data1 = new OplData(solver1.getOplEnv());
-                data1.add("nbJours",this.nbJours);
-                data1.add("nbClients",  this.affect.getClients().length);
-                data1.add("coutP", getCoutProd()[i]);
-                data1.add("coutS", getCoutStock()[i]);
-                data1.add("capaP", getCapa()[i]); 
-                data1.add("capaS", getCapaStock()[i]);
-                data1.add("demande", getDemandeClientJour());
-                data1.add("fenetre", getFenetre());
-                data1.add("coutPenalite", getPenalite());
-                
-                
-               
 
-                
-                // resolution du probleme
-                
-                int status1 = solver1.solve(data1);
-                
-                solver1.printData();
-                
-                // recuperation de la solution optimale
-                
-                if (status1 == 0) {
-                        double coutUsine = solver1.getOptValue();
-                        this.cout= this.cout+ coutUsine;
-                        double [] solProd = solver1.getDoubleArray("p","Jour");
-                        for (int j=0; j<this.nbJours; j++){
-//                        	this.usines[i].setProd(solProd[j], j);         	
-//                        	this.usines[i].setStock(solStock[j],j);
-                        	tab[i][j]=solProd[j];
-                        	
-                        }
-                        
-                 }
-                
-                data1.end();
-                solver1.end();  
-		}
-		return tab;
+	public void plProduction() {
+
+		for (int i = 0; i < this.affect.length; i++) {
+
+			// lecture du modele prod
+			OplSolver solver1 = new OplSolver("Production2.mod");
+
+			// traduction des correspondances entre les noms dans le modele et
+			// les donnees
+			OplData data1 = new OplData(solver1.getOplEnv());
+			data1.add("nbJours", this.nbJours);
+			data1.add("nbClients", this.affect[i].getClients().size());
+			data1.add("coutP", getCoutProd()[i]);
+			data1.add("coutS", getCoutStock()[i]);
+			data1.add("capaP", getCapa()[i]);
+			data1.add("capaS", getCapaStock()[i]);
+			data1.add("demande", getDemandeClientJour(this.affect[i]));
+			data1.add("fenetre", getFenetre(this.affect[i]));
+			data1.add("coutPenalite", getPenalite(this.affect[i]));
+
+			// resolution du probleme
+
+			int status1 = solver1.solve(data1);
+
 	
-}
-	public void plProd(){
-		for (int i=0;i<this.affect.getUsines().length;i++){
-			for(int j=0;j<nbJours;j++){
-				this.affect.getUsines()[i].setProd(plProduction()[i][j],j);
+
+			// recuperation de la solution optimale
+
+			if (status1 == 0) {
+				double coutUsine = solver1.getOptValue();
+				this.cout = this.cout + coutUsine;
+				double[] solProd = solver1.getDoubleArray("p", "Jour");
+				double[] solStock = solver1.getDoubleArray("s", "Jour");
+				double[][] solVente = solver1.getDoubleArray("Quantite", "Client", "Jour");
+				
+				for (int j = 0; j < this.nbJours; j++) {
+					this.affect[i].setProd(solProd[j], j);
+					this.affect[i].setStock(solStock[j], j);
+				}
+
+				Iterator<Client> iter = this.affect[i].getClients().iterator();
+				int j = 0;
+				while (iter.hasNext()) {
+					Client c = iter.next();
+					c.setMarchandiseTot(solVente[j]);
+					j++;
+				}	
 			}
+			data1.end();
+			solver1.end();
 		}
 	}
-	
-	
-	
-	public double[][] plStockage(){
-		double [][] tab=new double[this.affect.getUsines().length][nbJours];
-		for (int i=0;i<this.affect.getUsines().length;i++){
-			for(int j=0;j<nbJours;j++){
-				tab[i][j]=0;
-			}
-		}
-		
-               
-		for (int i=0; i< this.affect.getUsines().length; i++){
-			
-            	// lecture du modele prod
-                OplSolver solver1 = new OplSolver("Production2.mod");
-                
-                // traduction des correspondances entre les noms dans le modele et les donnees
-                OplData data1 = new OplData(solver1.getOplEnv());
-                data1.add("nbJours",this.nbJours);
-                data1.add("nbClients",  this.affect.getClients().length);
-                data1.add("coutP", getCoutProd()[i]);
-                data1.add("coutS", getCoutStock()[i]);
-                data1.add("capaP", getCapa()[i]); 
-                data1.add("capaS", getCapaStock()[i]);
-                data1.add("demande", getDemandeClientJour());
-                data1.add("fenetre", getFenetre());
-                data1.add("coutPenalite", getPenalite());
-                
 
-                
-                // resolution du probleme
-                
-                int status1 = solver1.solve(data1);
-                
-                // recuperation de la solution optimale
-                
-                if (status1 == 0) {
-                        double coutUsine = solver1.getOptValue();
-                        double [] solStock = solver1.getDoubleArray("s","Jour");
-                        for (int j=0; j<this.nbJours; j++){
-//                        	this.usines[i].setProd(solProd[j], j);         	
-//                        	this.usines[i].setStock(solStock[j],j);
-                        	tab[i][j]=solStock[j];
-                        	
-                        }
-                        
-                 }
-                
-                data1.end();
-                solver1.end();  
-		}
-		return tab;
-	
-}
-	public void plStock(){
-		for (int i=0;i<this.affect.getUsines().length;i++){
-			for(int j=0;j<nbJours;j++){
-				this.affect.getUsines()[i].setStock(plStockage()[i][j],j);
-			}
-		}
+	public double[] getTest() {
+		return this.test;
 	}
-	
-	
-	
-	
-	
-	public double[][][] plVente(){
-		double [][][] tab=new double[this.affect.getUsines().length][this.affect.getClients().length][nbJours];
-       
-		for (int i=0; i< this.affect.getUsines().length; i++){
-			
-            	// lecture du modele prod
-                OplSolver solver1 = new OplSolver("Production2.mod");
-                
-                // traduction des correspondances entre les noms dans le modele et les donnees
-                OplData data1 = new OplData(solver1.getOplEnv());
-                data1.add("nbJours",this.nbJours);
-                data1.add("nbClients",  this.affect.getClients().length);
-                data1.add("coutP", getCoutProd()[i]);
-                data1.add("coutS", getCoutStock()[i]);
-                data1.add("capaP", getCapa()[i]); 
-                data1.add("capaS", getCapaStock()[i]);
-                data1.add("demande", getDemandeClientJour());
-                data1.add("fenetre", getFenetre());
-                data1.add("coutPenalite", getPenalite());
-                
 
-                
-                // resolution du probleme
-                
-                int status1 = solver1.solve(data1);
-                
-                // recuperation de la solution optimale
-                
-                if (status1 == 0) {
-                        double coutUsine = solver1.getOptValue();
-                        double [][] solVente = solver1.getDoubleArray("Quantite","Client" ,"Jour");
-                      
-                        	
-//                        	this.usines[i].setProd(solProd[j], j);         	
-//                        	this.usines[i].setStock(solStock[j],j);
-                        	tab[i]=solVente;
-                        	
-                        }
-                        
-                 
-                
-                data1.end();
-                solver1.end();  
-		}
+	/**
+	 * @return le coût total de la production et du stockage sur toute la durée de l'activité
+	 */
 	
-
-		return tab;
-	
-}
-	
-	
-	public void setVentes(){
-		for(int i=0; i<this.affect.getUsines().length; i++){
-			 Iterator<Client> iter= this.affect.getUsines()[i].getClients().iterator();
-			 int j=0;
-			 while( iter.hasNext()){
-				 Client c= iter.next();
-				 c.setMarchandiseTot(plVente()[i][j]);
-				 j++;
-				 }
-			 }
-		}
-	
-	
-	
-	
-	
-	
-	
-	
-	public double getCoutProdStock(){
+	public double getCoutProdStock() {
 		return this.cout;
 	}
 	
-	
-    public Usine[] getUsines(){
-    	return this.affect.getUsines();
-    }
-    
-    //public Client[] getClients(){
-    	//return this.clients;
-    //}
+	/**
+	 * @return le tableau des usines 
+	 */
+
+	public Usine[] getUsines() {
+		return this.affect;
+	}
 
 }
-        
-
-
-    
