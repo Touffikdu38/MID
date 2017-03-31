@@ -41,6 +41,11 @@ public class Usine {
 		this.quantiteALivrer[dureeExp-1]= this.production[dureeExp-1]+this.stock[dureeExp-1];
 	}
 		
+	public String getId(){
+		return this.id;
+	}
+	
+	
 	public int getJour(){
 		return this.dureeExp;
 	}
@@ -69,7 +74,7 @@ public class Usine {
 	}
 	
 	public void setStock(double stock, int jour){
-		this.production[jour]= stock;
+		this.stock[jour]= stock;
 		
 	}
 	
@@ -79,7 +84,7 @@ public class Usine {
 	
 	 public double getCapaciteProdTotale(){
 		 double capa=0;
-		 for(int i=0; i<7; i++){
+		 for(int i=0; i<this.dureeExp; i++){
 			 capa=capa+ getCapaciteProd(i);
 		 }
 		 return capa;
@@ -91,7 +96,7 @@ public class Usine {
 		
 	public double getCapaciteStockTotale(){
 		double capa=0;
-		for( int i =0; i<7; i++){
+		for( int i =0; i<this.dureeExp; i++){
 			capa= capa+ getCapaciteStock(i);
 		}
 		return capa;
