@@ -18,8 +18,12 @@ public class Donnees{
 	private String[] idusines;
 	private String[] idClients;
 	private String[] idcamions;
-	//private int[][] fenetresClients;
 	
+	
+	/**
+	 * Construction de Donnees
+	 * @param name nom du fichier d'instances
+	 */
 	
 	
 	public Donnees (String name){
@@ -28,17 +32,27 @@ public class Donnees{
 		
     	f.open(nomfichier);	
 	
+    	/**
+    	 * Lecture de la première ligne
+    	 */
+    	
 		int nbjours= f.readInt();
     	int nbusines=f.readInt();
     	int nbclients= f.readInt();
     	int nbcamions= f.readInt();
     	
+    	/**
+    	 * Affectation de la première ligne
+    	 */
     	
     	this.nbjours=nbjours;
     	this.nbusines=nbusines;
     	this.nbclients=nbclients;
     	this.nbcamions=nbcamions;
     	
+    	/**
+    	 * Création de tableau d'usines, de leur coordonnées, de clients etc
+    	 */
     	
     	this.usines= new double [nbusines][4][nbjours];
     	this.coordUsines= new double [nbusines][2];
@@ -49,32 +63,33 @@ public class Donnees{
     	this.idusines= new String[nbusines];
     	this.idClients= new String[nbclients];
     	this.idcamions= new String[nbcamions];
-    	//this.fenetresClients= new int[nbclients][2];
-
-    	for(int i=0; i<nbusines; i++ ){
-    	String idUsine= f.readString();
-    	this.idusines[i]=idUsine;
-    	this.coordUsines[i][0]= f.readDouble();
-    	this.coordUsines[i][1]= f.readDouble();
-    	for( int j =0; j<4;j++){
-    		for(int k=0; k<nbjours; k++){
-    			this.usines[i][j][k]= f.readDouble();	
-    		}
-    	}
-    	}
     	
+    	/**
+    	 * Remplissage des tableaux d'usines etc avec les données lues
+    	 */
+
+    	
+    	for(int i=0; i<nbusines; i++ ){
+	    	String idUsine= f.readString();
+	    	this.idusines[i]=idUsine;
+	    	this.coordUsines[i][0]= f.readDouble();
+	    	this.coordUsines[i][1]= f.readDouble();
+	    	for( int j =0; j<4;j++){
+	    		for(int k=0; k<nbjours; k++){
+	    			this.usines[i][j][k]= f.readDouble();	
+	    		}
+	    	}
+    	}
+    
     	
     	for(int i=0; i<nbclients; i++){
     		String idClient= f.readString();
-    		//int fenetre1= f.readInt();
-    		//int fenetre2= f.readInt();
-    		//this.fenetresClients[i][0]= fenetre1;
-    		//this.fenetresClients[i][1]= fenetre2;
-    		//this.idClients[i]=idClient;
+    		this.idClients[i]=idClient;
     		for (int j=0; j<6;j++){
     			this.clients[i][j]=f.readDouble();
     		}
     	}
+    	
     	
     	for( int i=0; i<nbcamions; i++){
     		String idCamion=f.readString();
@@ -86,17 +101,18 @@ public class Donnees{
     			}
     		}
     	
+    	
     	for (int i=0; i<2;i++){
     		for(int j=0; j<nbjours;j++){
     			this.prestataire[i][j]=f.readDouble();
     		}
     	}
-    
-    
-
     	f.close();
 	}
 	
+	/**
+	 * @return un tableau d'usines dont les attributs sont ceux des données lues
+	 */
 	
 	public Usine[] getUsines(){
 		Usine[ ] tabUsines= new Usine[nbusines];	
@@ -110,18 +126,19 @@ public class Donnees{
 				capaciteStockU[j]= this.usines[i][1][j];
 				coutProdU[j]= this.usines[i][2][j];
     			coutStockU[j]= this.usines[i][3][j];
-				}
-			
+			}
 		String id = this.idusines[i];
 		Point coordU= new Point( coordUsines[i][0], coordUsines[i][1]);
-			
-			Usine u= new Usine(id, capaciteProdU, capaciteStockU,coutStockU, coutProdU, coordU, this.nbjours);
-			tabUsines[i]=u;
+		Usine u= new Usine(id, capaciteProdU, capaciteStockU,coutStockU, coutProdU, coordU, this.nbjours);
+		tabUsines[i]=u;
 		}
 		return tabUsines;
-		
 	}
 	
+	
+	/**
+	 * @return un tableau de clients dont les attributs sont ceux des données lues
+	 */
 	
 	public Client[] getClients(){
 		Client[] tabClients= new Client[nbclients];
@@ -132,6 +149,11 @@ public class Donnees{
 		}
 		return tabClients;
 	}
+	
+	
+	/**
+	 * @return un tableau de camions dont les attributs sont ceux des données lues
+	 */
 	
 	public Camion[] getCamions(){
 		Camion[] tabCamions= new Camion[this.nbcamions];
@@ -146,10 +168,13 @@ public class Donnees{
 			Camion c= new Camion(this.idcamions[i], idUsine,  this.camions[i][0], this.camions[i][1], this.camions[i][2], heuresJour, getUsines()[nb-1], this.nbjours );
 			tabCamions[i]=c;
 		}
-		
 		return tabCamions;
 	}
 	
+	
+	/**
+	 * @return un prestataire dont les attributs sont ceux des données lues
+	 */
 	
 	public Prestataire getPrestataire(){
 		double[] coutFixe = new double[this.nbjours];
@@ -163,10 +188,12 @@ public class Donnees{
 	}
 	
 	
+	/** 
+	 * @return la durée total de l'activité en jour
+	 */
+	
 	public int getDuree(){
 		return this.nbjours;
 	}
 	
-
-
 }
